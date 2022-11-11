@@ -175,6 +175,7 @@ elif selected == "Home Page":
                                         </p>""", unsafe_allow_html=True)
                 currentid = ft.get_data(tablename='users', category_find='username', category_select='id',
                                         data=username)
+                ft.update_days_remained(currentid)
                 currentdata = ft.get_data(tablename='storage', category_find='id', data=currentid, convert_list=False)
                 ft.noti(currentdata)
                 currentdata = pd.DataFrame(currentdata,
@@ -189,7 +190,7 @@ elif selected == "Home Page":
                 with col3_1:
                     currentdataprint['Food Weight (Grams)'] = ['{:.2f}'.format(i) for i in
                                                           currentdataprint['Food Weight (Grams)']]
-                    update_days_remained(currentid)
+                    # update_days_remained(currentid)
                     st.table(currentdataprint.style.apply(ft.color_coding, axis=1))
                 with col3_2:
                     st.markdown("""<style>
