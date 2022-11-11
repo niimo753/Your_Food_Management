@@ -1,0 +1,5 @@
+streamlit-lottie
+streamlit-pretty-notification-box
+streamlit_option_menu
+nltk
+altair
