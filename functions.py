@@ -249,41 +249,41 @@ def take_out(currentid):
         st.experimental_rerun()
 
 
-def add_new(currentid):
-    foodname = st.selectbox("Ingredient", foodchoice)
-    st.write(foodname)
-    unitchoice = portion.loc[portion['Main food description'] == foodname]
-    unitchoice = unitchoice.loc[unitchoice['weight'] != 0]['Descr'].tolist()
-    unitchoice.append('1 grams')
-    foodunit = st.selectbox("Unit", unitchoice)
-    foodweight = st.number_input("Quantity", min_value=0.01)
-    foodcode = nutrition.loc[nutrition['Main food description'] == foodname]['Food code'].tolist()[0]
-    foodexp = st.date_input("Expiry Day")
-    foodexpstatus = expiry_date(foodexp)
-    submitted = st.button("add new")
-    if submitted:
-        if foodunit != '1 grams':
-            portionratio = portion.loc[(portion['Main food description'] == foodname)]
-            portionratio = portionratio.loc[portionratio['Descr'] == foodunit]['weight'].tolist()[0]
-            foodweight = round(foodweight * portionratio)
-        cur.execute("SELECT * FROM storage WHERE id = ? AND foodcode = ? AND exp = ?", (currentid,foodcode,foodexp))
-        datacheck = cur.fetchall()
+# def add_new(currentid):
+#     foodname = st.selectbox("Ingredient", foodchoice)
+#     st.write(foodname)
+#     unitchoice = portion.loc[portion['Main food description'] == foodname]
+#     unitchoice = unitchoice.loc[unitchoice['weight'] != 0]['Descr'].tolist()
+#     unitchoice.append('1 grams')
+#     foodunit = st.selectbox("Unit", unitchoice)
+#     foodweight = st.number_input("Quantity", min_value=0.01)
+#     foodcode = nutrition.loc[nutrition['Main food description'] == foodname]['Food code'].tolist()[0]
+#     foodexp = st.date_input("Expiry Day")
+#     foodexpstatus = expiry_date(foodexp)
+#     submitted = st.button("add new")
+#     if submitted:
+#         if foodunit != '1 grams':
+#             portionratio = portion.loc[(portion['Main food description'] == foodname)]
+#             portionratio = portionratio.loc[portionratio['Descr'] == foodunit]['weight'].tolist()[0]
+#             foodweight = round(foodweight * portionratio)
+#         cur.execute("SELECT * FROM storage WHERE id = ? AND foodcode = ? AND exp = ?", (currentid,foodcode,foodexp))
+#         datacheck = cur.fetchall()
 
-        if not datacheck:
-            cur.execute(
-                'INSERT INTO storage (id, foodname, foodcode, foodweight, exp, expstatus)'
-                'VALUES (?, ?, ?, ?, ?, ?)',
-                (currentid, foodname, foodcode, foodweight, foodexp, foodexpstatus))
-            connect.commit()
-        else:
-            currentweight = list(datacheck[0])[-3]
-            foodweight += currentweight
-            foodweight = round(foodweight)
-            # new: edit (foodweight, currentid, foodcode...) - old (currentid, foodweight, foodcode...)
-            cur.execute('UPDATE storage SET foodweight=? WHERE id=? AND foodcode=? AND exp = ?',
-                        (foodweight, currentid, foodcode, foodexp))
-            connect.commit()
-        st.experimental_rerun()
+#         if not datacheck:
+#             cur.execute(
+#                 'INSERT INTO storage (id, foodname, foodcode, foodweight, exp, expstatus)'
+#                 'VALUES (?, ?, ?, ?, ?, ?)',
+#                 (currentid, foodname, foodcode, foodweight, foodexp, foodexpstatus))
+#             connect.commit()
+#         else:
+#             currentweight = list(datacheck[0])[-3]
+#             foodweight += currentweight
+#             foodweight = round(foodweight)
+#             # new: edit (foodweight, currentid, foodcode...) - old (currentid, foodweight, foodcode...)
+#             cur.execute('UPDATE storage SET foodweight=? WHERE id=? AND foodcode=? AND exp = ?',
+#                         (foodweight, currentid, foodcode, foodexp))
+#             connect.commit()
+#         st.experimental_rerun()
 
 
 def history(currentid, foodremoved):
@@ -297,47 +297,46 @@ def history(currentid, foodremoved):
             connect.commit()
 
 
-# def add_new(currentid):
-#     # foodname = st.selectbox("Ingredient", foodchoice)
-#     foodoptions = st.multiselect("Ingredient", foodchoice)
-#     foodchosing = []
-#     key = 1000000
-#     for foodname in foodoptions:
-#         st.write(foodname)
-#         unitchoice = portion.loc[portion['Main food description'] == foodname]
-#         unitchoice = unitchoice.loc[unitchoice['weight'] != 0]['Descr'].tolist()
-#         unitchoice.append('1 grams')
-#         foodunit = st.selectbox("Unit", unitchoice, key=key+1)
-#         foodweight = st.number_input("Quantity", key=key+2)
-#         foodcode = nutrition.loc[nutrition['Main food description'] == foodname]['Food code'].tolist()[0]
-#         foodexp = st.date_input("Expiry Day", key=key+3)
-#         foodexpstatus = expiry_date(foodexp)
-#         temp = {'foodname': foodname, 'foodcode': foodcode, 'foodunit': foodunit,'foodweight': foodweight,
-#                 'foodexp': foodexp, 'foodexpstatus': foodexpstatus}
-#         foodchosing.append(temp)
-#         key += 3
-#
-#     if st.button("Submit"):
-#         for i in foodchosing:
-#             if i['foodunit'] != '1 grams':
-#                 portionratio = portion.loc[(portion['Main food description'] == i['foodname'])]
-#                 portionratio = portionratio.loc[portionratio['Descr'] == foodunit]['weight'].tolist()[0]
-#                 i['foodweight'] = i['foodweight'] * portionratio
-#             cur.execute("SELECT * FROM storage WHERE id = ? AND foodcode = ? AND exp = ?", (currentid,
-#                                                                                             i['foodcode'],
-#                                                                                             i['foodexp']))
-#             datacheck = cur.fetchall()
-#             if not datacheck:
-#                 cur.execute(
-#                     'INSERT INTO storage (id, foodname, foodcode, foodweight, exp, expstatus)'
-#                     'VALUES (?, ?, ?, ?, ?, ?)',
-#                     (currentid, i['foodname'], i['foodcode'], i['foodweight'], i['foodexp'], i['foodexpstatus']))
-#                 connect.commit()
-#             else:
-#                 currentweight = list(datacheck[0])[-3]
-#                 i['foodweight'] += currentweight
-#                 # new: edit (foodweight, currentid, foodcode...) - old (currentid, foodweight, foodcode...)
-#                 cur.execute('UPDATE storage SET foodweight=? WHERE id=? AND foodcode=? AND exp = ?',
-#                             (i['foodweight'], currentid, i['foodcode'], i['foodexp']))
-#                 connect.commit()
-#         st.experimental_rerun()
+def add_new(currentid):
+    foodoptions = st.multiselect("Ingredient", foodchoice)
+    foodchosing = []
+    key = 1000000
+    for foodname in foodoptions:
+        st.write(foodname)
+        unitchoice = portion.loc[portion['Main food description'] == foodname]
+        unitchoice = unitchoice.loc[unitchoice['weight'] != 0]['Descr'].tolist()
+        unitchoice.append('1 grams')
+        foodunit = st.selectbox("Unit", unitchoice, key=key+1)
+        foodweight = st.number_input("Quantity", key=key+2)
+        foodcode = nutrition.loc[nutrition['Main food description'] == foodname]['Food code'].tolist()[0]
+        foodexp = st.date_input("Expiry Day", key=key+3)
+        foodexpstatus = expiry_date(foodexp)
+        temp = {'foodname': foodname, 'foodcode': foodcode, 'foodunit': foodunit,'foodweight': foodweight,
+                'foodexp': foodexp, 'foodexpstatus': foodexpstatus}
+        foodchosing.append(temp)
+        key += 3
+
+    if st.button("Submit"):
+        for i in foodchosing:
+            if i['foodunit'] != '1 grams':
+                portionratio = portion.loc[(portion['Main food description'] == i['foodname'])]
+                portionratio = portionratio.loc[portionratio['Descr'] == foodunit]['weight'].tolist()[0]
+                i['foodweight'] = i['foodweight'] * portionratio
+            cur.execute("SELECT * FROM storage WHERE id = ? AND foodcode = ? AND exp = ?", (currentid,
+                                                                                            i['foodcode'],
+                                                                                            i['foodexp']))
+            datacheck = cur.fetchall()
+            if not datacheck:
+                cur.execute(
+                    'INSERT INTO storage (id, foodname, foodcode, foodweight, exp, expstatus)'
+                    'VALUES (?, ?, ?, ?, ?, ?)',
+                    (currentid, i['foodname'], i['foodcode'], i['foodweight'], i['foodexp'], i['foodexpstatus']))
+                connect.commit()
+            else:
+                currentweight = list(datacheck[0])[-3]
+                i['foodweight'] += currentweight
+                # new: edit (foodweight, currentid, foodcode...) - old (currentid, foodweight, foodcode...)
+                cur.execute('UPDATE storage SET foodweight=? WHERE id=? AND foodcode=? AND exp = ?',
+                            (i['foodweight'], currentid, i['foodcode'], i['foodexp']))
+                connect.commit()
+        st.experimental_rerun()
