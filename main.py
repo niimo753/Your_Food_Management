@@ -36,7 +36,7 @@ foodchoice = nutrition['Main food description']
 
 # ---
 
-con = sqlite3.connect("database.db")  # create a connection to the database database.db
+con = sqlite3.connect("data/database.db")  # create a connection to the database database.db
 cur = con.cursor()  # create cursor to execute SQL statements and fetch results from SQL queries
 cur.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER, username VARCHAR PRIMARY KEY, password VARCHAR)''')
 cur.execute(

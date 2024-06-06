@@ -1,20 +1,19 @@
 import sqlite3
 from datetime import datetime, date
 
-import pandas
 import streamlit as st
 from pretty_notification_box import notification_box
 import pandas as pd
 import altair as alt
 
-connect = sqlite3.connect("../data/database.db", check_same_thread=False)
+connect = sqlite3.connect("data/database.db", check_same_thread=False)
 cur = connect.cursor()
 
 cur.execute("""CREATE TABLE IF NOT EXISTS calohistory (id INTEGER, foodname VARCHAR, foodcode VARCHAR, foodweight FLOAT,
             datetakeout VARCHAR)""")
 
-nutrition = pd.read_csv("../data/Nutrition.csv")
-portion = pd.read_csv("../data/Portion.csv")
+nutrition = pd.read_csv("data/Nutrition.csv")
+portion = pd.read_csv("data/Portion.csv")
 foodchoice = nutrition['Main food description']
 
 
